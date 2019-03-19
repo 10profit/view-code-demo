@@ -1,20 +1,21 @@
 <?
 require_once($_SERVER['DOCUMENT_ROOT'] . "/bitrix/modules/main/include/prolog_before.php");
-//pre($arOrder);
+
 use Bitrix\Main\Loader;
 Loader::includeModule('iblock');
 Loader::includeModule('catalog');
 Loader::includeModule('sale');
+
 class Courier
 {
     private static $instance;
     public static function handler($arOrder)
     {
         $instance = self::getInstance();
-        // Продукты заказа (без свойств)
+        // РџСЂРѕРґСѓРєС‚С‹ Р·Р°РєР°Р·Р° (Р±РµР· СЃРІРѕР№СЃС‚РІ)
         $arProducts = $instance->getListProducts($arOrder['ID']);
-        //pre($arOrder);
-        // Информация о инфоблоке
+        
+        // РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РёРЅС„РѕР±Р»РѕРєРµ
         $arIblock = $instance->getIblockInfo($arProducts[0]['PRODUCT_ID']);
         $arResult = $instance->resultCreate($arIblock, $arProducts, $arOrder);
         return $arResult;
@@ -24,7 +25,7 @@ class Courier
         $instance = self::$instance ? self::$instance : new self();
         return $instance;
     }
-    //Возвращает список товаров из заказа
+    //Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє С‚РѕРІР°СЂРѕРІ РёР· Р·Р°РєР°Р·Р°
     private  function getListProducts($orderId)
     {
         $items = null;
@@ -40,10 +41,10 @@ class Courier
         }
     else
         {
-            throw new \Exception('Не удалось получить список продуктов по ID Заказа. Или он пуст.');
+            throw new \Exception('ГЌГҐ ГіГ¤Г Г«Г®Г±Гј ГЇГ®Г«ГіГ·ГЁГІГј Г±ГЇГЁГ±Г®ГЄ ГЇГ°Г®Г¤ГіГЄГІГ®Гў ГЇГ® ID Г‡Г ГЄГ Г§Г . Г€Г«ГЁ Г®Г­ ГЇГіГ±ГІ.');
         }
     }
-    // Возвращает ID Тип и Код Инфоблока с Товарами
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ ID РўРёРї Рё РљРѕРґ РРЅС„РѕР±Р»РѕРєР° СЃ РўРѕРІР°СЂР°РјРё
     private function getIblockInfo($ElementID)
     {
         $items = array();
@@ -57,7 +58,7 @@ class Courier
 
         return $items;
     }
-    //возвращает список свйоств для товара
+    //РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє СЃРІР№РѕСЃС‚РІ РґР»СЏ С‚РѕРІР°СЂР°
     private function getElementProps($IBlockCode, $ElementID)
     {
         $prop = array();
@@ -70,7 +71,7 @@ class Courier
         }
         return $prop;
     }
-    // Возвращает массив Пользовательских свойств Заказа
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РџРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРІРѕР№СЃС‚РІ Р—Р°РєР°Р·Р°
     private function getOrderProps($orderID)
     {
         //pre($orderID);
@@ -86,10 +87,10 @@ class Courier
         {
             $arValue[$arVals['CODE']] = $arVals;
         }
-        //pre($arValue);
+       
         return $arValue;
     }
-    // возвращает остальные поля
+    // РІРѕР·РІСЂР°С‰Р°РµС‚ РѕСЃС‚Р°Р»СЊРЅС‹Рµ РїРѕР»СЏ
     private function getOrderFields($orderID)
     {
         $arField = array();
@@ -125,11 +126,11 @@ class Courier
         return $arPay;
     }
 
-    // Возвращщает массив инфы о Юзере по его ID
+    // Р’РѕР·РІСЂР°С‰С‰Р°РµС‚ РјР°СЃСЃРёРІ РёРЅС„С‹ Рѕ Р®Р·РµСЂРµ РїРѕ РµРіРѕ ID
     private function getUserInfo($userID)
     {
         $order = array('sort' => 'asc');
-        $tmp = 'sort'; // параметр проигнорируется методом, но обязан быть
+        $tmp = 'sort'; // РїР°СЂР°РјРµС‚СЂ РїСЂРѕРёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ РјРµС‚РѕРґРѕРј, РЅРѕ РѕР±СЏР·Р°РЅ Р±С‹С‚СЊ
         $rsUser = \CUser::GetList($order, $tmp, array("ID"=>$userID), array("UF_*"));
         $arUser = $rsUser->Fetch();
         return $arUser;
@@ -138,16 +139,16 @@ class Courier
     private function getOrderStatus($statusID)
     {
             $arStatus = array(
-            "N" => "Принят. доставка",
-            "M" => "Принят по телефону",
-            "D" => "Новый",
-            "E" => "Отменен",
-            "F" => "Выполнен",
+            "N" => "ГЏГ°ГЁГ­ГїГІ. Г¤Г®Г±ГІГ ГўГЄГ ",
+            "M" => "ГЏГ°ГЁГ­ГїГІ ГЇГ® ГІГҐГ«ГҐГґГ®Г­Гі",
+            "D" => "ГЌГ®ГўГ»Г©",
+            "E" => "ГЋГІГ¬ГҐГ­ГҐГ­",
+            "F" => "Г‚Г»ГЇГ®Г«Г­ГҐГ­",
             );
             $status = array_search($statusID, array_flip($arStatus));
             return $status;
     }
-        // global array - собираем массив для вывода в шаблон
+        // global array - СЃРѕР±РёСЂР°РµРј РјР°СЃСЃРёРІ РґР»СЏ РІС‹РІРѕРґР° РІ С€Р°Р±Р»РѕРЅ
     private function resultCreate($arIblock, $arProducts, $arOrder)
     {
         $result = array();
